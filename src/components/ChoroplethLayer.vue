@@ -1,12 +1,25 @@
 <template>
-  <h1>Say hi!</h1>
+  <l-geo-json
+    ref="choropleth-layer"
+    :geojson="geoJson"
+  />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import type { GeoJSON } from 'leaflet'
+import { LGeoJson } from '@vue-leaflet/vue-leaflet'
 
 export default defineComponent({
-  name: 'ChoroplethLayer.vue'
+  name: 'ChoroplethLayer',
+  components: {
+    LGeoJson
+  },
+  props: {
+    geoJson: {
+      type: [Object, Array] as PropType<GeoJSON>
+    }
+  }
 })
 </script>
 
