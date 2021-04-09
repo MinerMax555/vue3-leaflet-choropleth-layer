@@ -17,7 +17,7 @@
 import { onMounted, ref } from 'vue'
 import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet'
 import axios from 'axios'
-import ChoroplethLayer from '../src/components/ChoroplethLayer'
+import ChoroplethLayer from '../components/ChoroplethLayer.vue'
 import type { GeoJSON } from 'leaflet'
 
 export default {
@@ -30,13 +30,13 @@ export default {
   setup () {
     const center = [46.575855, 11.374969]
 
-    const areas = ref(null) as ref<GeoJSON>
-    const data = ref(null) as ref<Record<number, any>>
+    const areas = ref<any>(null)
+    const data = ref<any>(null)
     onMounted(async () => {
       const features = (await axios.get('https://gstat.eu/api/v1/adminarea/?adminLevel=8&parent=47046')).data
-      features.forEach(f => f.type = 'Feature')
+      features.forEach((f: any) => f.type = 'Feature')
       data.value = {}
-      features.forEach(f => {
+      features.forEach((f: any) => {
         data.value[f.id] = Math.random() * 100
       })
       areas.value = {
@@ -50,5 +50,5 @@ export default {
 </script>
 
 <style>
-@import '../node_modules/leaflet/dist/leaflet.css';
+@import '../../node_modules/leaflet/dist/leaflet.css';
 </style>
