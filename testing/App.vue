@@ -5,7 +5,11 @@
     style="height: 750px"
   >
     <l-tile-layer :url="'https://{s}.tile.osm.org/{z}/{x}/{y}.png'" />
-    <choropleth-layer :geo-json="areas"/>
+    <choropleth-layer
+      v-if="areas && data"
+      :geo-json="areas"
+      :data="data"
+    />
   </l-map>
 </template>
 
@@ -31,8 +35,9 @@ export default {
     onMounted(async () => {
       const features = (await axios.get('https://gstat.eu/api/v1/adminarea/?adminLevel=8&parent=47046')).data
       features.forEach(f => f.type = 'Feature')
+      data.value = {}
       features.forEach(f => {
-        data[f.id] = Math.random() * 100
+        data.value[f.id] = Math.random() * 100
       })
       areas.value = {
         type: 'FeatureCollection',
