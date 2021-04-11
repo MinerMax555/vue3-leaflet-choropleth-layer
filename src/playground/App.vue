@@ -9,7 +9,6 @@
       v-if="areas && data"
       :geo-json="areas"
       :data="data"
-      :options="options"
     />
   </l-map>
 </template>
@@ -37,7 +36,7 @@ export default {
     const data = ref<any>(null)
     const fillColorFn = (feature: Feature, data: any,) => {
       return chroma.scale('#FFFFFF', '#FF0000')
-        .domain(0, 100).out('hex')(data)
+        .domain(0, 100).out('hex')(data.value)
     }
     const options = {
       fill: {
@@ -49,7 +48,9 @@ export default {
       features.forEach((f: any) => f.type = 'Feature')
       data.value = {}
       features.forEach((f: any) => {
-        data.value[f.id] = Math.random() * 100
+        data.value[f.id] = {
+          value: Math.random() * 100
+        }
       })
       areas.value = {
         type: 'FeatureCollection',
