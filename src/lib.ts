@@ -1,1 +1,1 @@
-export {default} from './components/ChoroplethLayer.vue'
+export { default as ChoroplethLayer } from './components/ChoroplethLayer.vue'

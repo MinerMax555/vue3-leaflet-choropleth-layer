@@ -7,14 +7,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
 import type { GeoJSON, GeoJSONOptions, PathOptions } from 'leaflet'
+import type { Feature } from 'geojson'
+import type { ChoroplethOptions } from '../index'
+import { computed, defineComponent, PropType } from 'vue'
 import { LGeoJson } from '@vue-leaflet/vue-leaflet'
-import { Feature } from 'geojson'
-import { ChoroplethOptions } from '../index'
-import { executeCallback } from '../utils/util'
 import { PartialDeep } from 'type-fest'
 import mergeOptions from 'merge-options'
+import { executeCallback } from '../utils/util'
 import { defaultOptions } from '../utils/defaults'
 
 export default defineComponent({
@@ -41,8 +41,10 @@ export default defineComponent({
     const mergedOptions: ChoroplethOptions = mergeOptions(defaultOptions, props.options)
     const geoOptions = computed((): GeoJSONOptions => {
       return {
-        style: (feature: Feature): PathOptions => {
-          const id = feature.id
+        style: (feature?: Feature): PathOptions => {
+          if(!feature)
+            return {}
+          const id = feature?.id
           if (id === undefined) {
             throw new TypeError(`Feature ${feature.toString()} has no valid id attribute`)
           }
@@ -70,7 +72,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-
-</style>
