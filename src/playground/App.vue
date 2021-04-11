@@ -9,6 +9,7 @@
       v-if="areas && data"
       :geo-json="areas"
       :data="data"
+      :options="options"
     />
   </l-map>
 </template>
@@ -18,7 +19,9 @@ import { onMounted, ref } from 'vue'
 import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet'
 import axios from 'axios'
 import ChoroplethLayer from '../components/ChoroplethLayer.vue'
-import type { GeoJSON } from 'leaflet'
+import * as chroma from 'chroma.ts'
+import { Feature } from 'geojson'
+import { Scale } from 'chroma.ts'
 
 export default {
   name: 'App',
@@ -32,6 +35,15 @@ export default {
 
     const areas = ref<any>(null)
     const data = ref<any>(null)
+    const fillColorFn = (feature: Feature, data: any,) => {
+      return chroma.scale('#FFFFFF', '#FF0000')
+        .domain(0, 100).out('hex')(data)
+    }
+    const options = {
+      fill: {
+        color: fillColorFn
+      }
+    }
     onMounted(async () => {
       const features = (await axios.get('https://gstat.eu/api/v1/adminarea/?adminLevel=8&parent=47046')).data
       features.forEach((f: any) => f.type = 'Feature')
@@ -44,7 +56,7 @@ export default {
         features: features
       }
     })
-    return { center, areas, data }
+    return { center, areas, data, options }
   }
 }
 </script>

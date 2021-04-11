@@ -7,7 +7,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "chroma-js": "^2.1.1",
+    "chroma.ts": "^1.0.10",
     "vue": "^3.0.5"
   },
   "devDependencies": {

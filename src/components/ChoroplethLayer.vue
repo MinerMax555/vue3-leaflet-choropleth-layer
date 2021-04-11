@@ -2,15 +2,17 @@
   <l-geo-json
     ref="choropleth-layer"
     :geojson="geoJson"
-    :options="options"
+    :options="geoOptions"
   />
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import chroma from 'chroma-js'
-import type { GeoJSON } from 'leaflet'
+import type { GeoJSON, PathOptions } from 'leaflet'
 import { LGeoJson } from '@vue-leaflet/vue-leaflet'
+import { Feature } from 'geojson'
+import { ChoroplethOptions } from '../index'
+import { executeCallback } from '../utils/util'
 
 export default defineComponent({
   name: 'ChoroplethLayer',
@@ -25,27 +27,28 @@ export default defineComponent({
     data: {
       type: Object as PropType<Record<number, any>>,
       required: true
+    },
+    options: {
+      type: Object as PropType<ChoroplethOptions>,
+      required: true
     }
   },
   setup (props) {
-    const options = computed(() => {
+    const geoOptions = computed(() => {
       return {
-        style: (feature: any) => {
-          console.log(props.data)
-          const fillColor = chroma
-            .scale(['#FFFFFF', '#FF0000']).domain([0, 100])
-            .mode('lch')(props.data[feature.id])
-          return {
+        style: (feature: Feature) => {
+          const ret: PathOptions = {
             color: '#000000',
             weight: 1,
             opacity: 1,
-            fillColor: fillColor,
+            fillColor: executeCallback<string>(props.options.fill?.color || 'black', feature, props.data[Number(feature.id) || 1], {}),
             fillOpacity: 1
           }
+          return ret
         }
       }
     })
-    return { options }
+    return { geoOptions }
   }
 })
 </script>
