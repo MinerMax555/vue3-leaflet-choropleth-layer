@@ -7,7 +7,7 @@
   >
     <l-tooltip>
       <component
-        v-if="typeof tooltip === 'object'"
+        v-if="typeof tooltip === 'object' && currentFeature"
         :is="tooltip"
         :feature="currentFeature"
         :data="currentData"
@@ -106,7 +106,6 @@ export default defineComponent({
     })
     function onMouseEnter(event) {
       context.emit('mouseenter', event)
-      console.log(event.sourceTarget.feature)
       currentFeature.value = event.sourceTarget.feature
     }
     return { geoOptions, tooltip, currentFeature, currentData, onMouseEnter }
