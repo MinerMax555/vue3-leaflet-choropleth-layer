@@ -10,10 +10,9 @@ interface CallbackParameter {
 
 interface BorderCallbackParameter extends CallbackParameter {
   fill: {
-    weight: number
     opacity: number
     color: string
-    pattern: FillPattern
+    //TODO pattern: FillPattern
   }
 }
 

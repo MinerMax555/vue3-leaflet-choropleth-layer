@@ -13,15 +13,15 @@
         :data="currentData"
         :callback-data="callbackData"
       />
-      <div v-else v-html="tooltip" />
+      <div v-else-if="tooltip" v-html="tooltip" />
     </l-tooltip>
   </l-geo-json>
 </template>
 
 <script lang="ts">
-import type { GeoJSON, GeoJSONOptions, PathOptions } from 'leaflet'
+import type { GeoJSON, GeoJSONOptions, LeafletMouseEvent, PathOptions } from 'leaflet'
 import type { Feature } from 'geojson'
-import type { ChoroplethOptions } from '../index'
+import type { BorderCallbackParameter, ChoroplethOptions } from '../index'
 import { Component, computed, defineComponent, PropType, ref } from 'vue'
 import { LGeoJson, LPopup, LTooltip } from '@vue-leaflet/vue-leaflet'
 import { PartialDeep } from 'type-fest'
@@ -59,7 +59,8 @@ export default defineComponent({
   setup (props, context) {
     const currentFeature = ref<Feature | null>(null)
     const currentData = computed((): unknown => getDataForFeature(currentFeature.value))
-    function getDataForFeature (feature: Feature): unknown | null {
+
+    function getDataForFeature (feature: Feature | null): unknown | null {
       const id = feature?.id
       if (feature && id === undefined) {
         throw new TypeError(`Feature ${feature.toString()} has no valid id attribute`)
@@ -70,6 +71,7 @@ export default defineComponent({
         return props.data[id]
       }
     }
+
     const mergedOptions: ChoroplethOptions = mergeOptions(defaultOptions, props.options)
     const geoOptions = computed((): GeoJSONOptions => {
       return {
@@ -82,9 +84,18 @@ export default defineComponent({
             opacity: executeCallback<number>(mergedOptions.fill.opacity, feature, data, { callbackData: props.callbackData }),
           }
           const border = {
-            weight: executeCallback<number>(mergedOptions.border.weight, feature, data, { callbackData: props.callbackData, fill: fill }),
-            color: executeCallback<string>(mergedOptions.border.color, feature, data, { callbackData: props.callbackData, fill: fill }),
-            opacity: executeCallback<number>(mergedOptions.border.opacity, feature, data, { callbackData: props.callbackData, fill: fill }),
+            weight: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.weight, feature, data, {
+              callbackData: props.callbackData,
+              fill: fill
+            }),
+            color: executeCallback<string, BorderCallbackParameter>(mergedOptions.border.color, feature, data, {
+              callbackData: props.callbackData,
+              fill: fill
+            }),
+            opacity: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.opacity, feature, data, {
+              callbackData: props.callbackData,
+              fill: fill
+            }),
           }
           return {
             fillColor: fill.color,
@@ -97,17 +108,22 @@ export default defineComponent({
         },
       }
     })
-    const tooltip = computed((): Component | string => {
+    const tooltip = computed((): Component | string | null => {
       if (typeof mergedOptions.tooltip.content === 'object') {
         return mergedOptions.tooltip.content
       } else {
+        if (!currentFeature.value) {
+          return null
+        }
         return executeCallback<string>(mergedOptions.tooltip.content, currentFeature.value, currentData.value, { callbackData: props.callbackData })
       }
     })
-    function onMouseEnter(event) {
+
+    function onMouseEnter (event: LeafletMouseEvent) {
       context.emit('mouseenter', event)
       currentFeature.value = event.sourceTarget.feature
     }
+
     return { geoOptions, tooltip, currentFeature, currentData, onMouseEnter }
   }
 })
