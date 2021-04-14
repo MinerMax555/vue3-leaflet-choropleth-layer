@@ -9,6 +9,7 @@
       v-if="areas && data"
       :geo-json="areas"
       :data="data"
+      :options="options"
     />
   </l-map>
 </template>
@@ -20,7 +21,9 @@ import axios from 'axios'
 import ChoroplethLayer from '../components/ChoroplethLayer.vue'
 import * as chroma from 'chroma.ts'
 import { Feature } from 'geojson'
-import { Scale } from 'chroma.ts'
+import { PartialDeep } from 'type-fest'
+import { ChoroplethOptions } from '../index'
+import PopupContent from './PopupContent.vue'
 
 export default {
   name: 'App',
@@ -34,13 +37,16 @@ export default {
 
     const areas = ref<any>(null)
     const data = ref<any>(null)
-    const fillColorFn = (feature: Feature, data: any,) => {
+    const fillColorFn = (feature: Feature, data: any) => {
       return chroma.scale('#FFFFFF', '#FF0000')
         .domain(0, 100).out('hex')(data.value)
     }
-    const options = {
+    const options : PartialDeep<ChoroplethOptions> = {
       fill: {
         color: fillColorFn
+      },
+      tooltip: {
+        content: () => PopupContent
       }
     }
     onMounted(async () => {
