@@ -1,6 +1,6 @@
 <template>
   <l-geo-json
-    ref="choropleth-layer"
+    ref="layer"
     :geojson="geoJson"
     :options="geoOptions"
     @mouseenter="onMouseEnter"
@@ -57,6 +57,8 @@ export default defineComponent({
     }
   },
   setup (props, context) {
+    //TODO correct type of LGeoJson
+    const layer = ref<any|null>(null)
     const currentFeature = ref<Feature | null>(null)
     const currentData = computed((): unknown => getDataForFeature(currentFeature.value))
 
@@ -74,8 +76,7 @@ export default defineComponent({
 
     const mergedOptions: ChoroplethOptions = mergeOptions(defaultOptions, props.options)
     const geoOptions = computed((): GeoJSONOptions => {
-      return {
-        style: (feature?: Feature): PathOptions => {
+      const style = (feature?: Feature): PathOptions => {
           if (!feature)
             return {}
           const data = getDataForFeature(feature)
@@ -105,8 +106,12 @@ export default defineComponent({
             weight: border.weight,
             opacity: border.opacity,
           }
-        },
+        }
+      const leafletObj = layer.value?.leafletObject
+      if(leafletObj) {
+        leafletObj.setStyle(style)
       }
+      return { style }
     })
     const tooltip = computed((): Component | string | null => {
       if (typeof mergedOptions.tooltip.content === 'object') {
@@ -124,7 +129,7 @@ export default defineComponent({
       currentFeature.value = event.sourceTarget.feature
     }
 
-    return { geoOptions, tooltip, currentFeature, currentData, onMouseEnter }
+    return { layer, geoOptions, tooltip, currentFeature, currentData, onMouseEnter }
   }
 })
 </script>

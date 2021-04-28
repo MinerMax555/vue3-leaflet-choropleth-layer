@@ -12,10 +12,12 @@
       :options="options"
     />
   </l-map>
+  <input type="range" min="0" max="99" step="1" v-model="scaleStart"> White is at {{ scaleStart }}
+  <input type="range" min="1" max="100" step="1" v-model="scaleEnd"> Red is at {{ scaleEnd }}
 </template>
 
 <script lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet'
 import axios from 'axios'
 import ChoroplethLayer from '../components/ChoroplethLayer.vue'
@@ -37,18 +39,36 @@ export default {
 
     const areas = ref<any>(null)
     const data = ref<any>(null)
-    const fillColorFn = (feature: Feature, data: any) => {
-      return chroma.scale('#FFFFFF', '#FF0000')
-        .domain(0, 100).out('hex')(data.value)
-    }
-    const options : PartialDeep<ChoroplethOptions> = {
-      fill: {
-        color: fillColorFn
-      },
-      tooltip: {
-        content: () => PopupContent
+
+    const scaleStart = ref(0)
+    const scaleEnd = ref(100)
+
+    const fillColorFn = computed(() => {
+        return (feature: Feature, data: any) => {
+          console.log(scaleStart.value, scaleEnd.value)
+          return chroma.scale('#FFFFFF', '#FF0000')
+            .domain(scaleStart.value, scaleEnd.value).out('hex')(data.value)
+        }
       }
-    }
+    )
+    const options = computed<PartialDeep<ChoroplethOptions>>(() => {
+      //To ensure
+      scaleStart.value;
+      scaleEnd.value;
+      return {
+        fill: {
+          color: fillColorFn.value
+        },
+        tooltip: {
+          content: () => PopupContent
+        },
+      }
+    })
+    const callbackData = computed(() => {
+      return {
+        forceUpdates: [scaleStart.value, scaleEnd.value]
+      }
+    })
     onMounted(async () => {
       const features = (await axios.get('https://gstat.eu/api/v1/adminarea/?adminLevel=8&parent=47046')).data
       features.forEach((f: any) => f.type = 'Feature')
@@ -63,7 +83,7 @@ export default {
         features: features
       }
     })
-    return { center, areas, data, options }
+    return { scaleStart, scaleEnd, center, areas, data, callbackData, options }
   }
 }
 </script>
