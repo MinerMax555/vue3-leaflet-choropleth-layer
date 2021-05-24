@@ -45,7 +45,6 @@ export default {
 
     const fillColorFn = computed(() => {
         return (feature: Feature, data: any) => {
-          console.log(scaleStart.value, scaleEnd.value)
           return chroma.scale('#FFFFFF', '#FF0000')
             .domain(scaleStart.value, scaleEnd.value).out('hex')(data.value)
         }

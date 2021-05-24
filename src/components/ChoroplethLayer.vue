@@ -81,22 +81,18 @@ export default defineComponent({
             return {}
           const data = getDataForFeature(feature)
           const fill = {
-            color: executeCallback<string>(mergedOptions.fill.color, feature, data, { callbackData: props.callbackData }),
-            opacity: executeCallback<number>(mergedOptions.fill.opacity, feature, data, { callbackData: props.callbackData }),
+            color: executeCallback<string>(mergedOptions.fill.color, feature, data,
+              { callbackData: props.callbackData }),
+            opacity: executeCallback<number>(mergedOptions.fill.opacity, feature, data,
+              { callbackData: props.callbackData }),
           }
           const border = {
-            weight: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.weight, feature, data, {
-              callbackData: props.callbackData,
-              fill: fill
-            }),
-            color: executeCallback<string, BorderCallbackParameter>(mergedOptions.border.color, feature, data, {
-              callbackData: props.callbackData,
-              fill: fill
-            }),
-            opacity: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.opacity, feature, data, {
-              callbackData: props.callbackData,
-              fill: fill
-            }),
+            weight: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.weight, feature, data,
+              { callbackData: props.callbackData, fill: fill }),
+            color: executeCallback<string, BorderCallbackParameter>(mergedOptions.border.color, feature, data,
+              { callbackData: props.callbackData, fill: fill }),
+            opacity: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.opacity, feature, data,
+              { callbackData: props.callbackData, fill: fill }),
           }
           return {
             fillColor: fill.color,
@@ -108,7 +104,7 @@ export default defineComponent({
           }
         }
       const leafletObj = layer.value?.leafletObject
-      if(leafletObj) {
+      if(leafletObj?.setStyle) {
         leafletObj.setStyle(style)
       }
       return { style }
