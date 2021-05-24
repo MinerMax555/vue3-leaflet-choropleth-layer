@@ -108,7 +108,7 @@ export default defineComponent({
           opacity: border.opacity,
         }
       }
-      const leafletObj = layer.value?.leafletObject
+      const leafletObj: GeoJSON = layer.value?.leafletObject
       if (leafletObj?.setStyle) {
         leafletObj.setStyle(style)
       }
@@ -130,6 +130,10 @@ export default defineComponent({
     function onMouseEnter (event: LeafletMouseEvent) {
       context.emit('mouseenter', event)
       currentFeature.value = event.sourceTarget.feature
+      if (event.sourceTarget?.bringToFront) {
+        //Bring focused area to front to have no overlaps / border issues
+        event.sourceTarget.bringToFront()
+      }
     }
     function onMouseLeave (event: LeafletMouseEvent) {
       context.emit('mouseleave', event)
