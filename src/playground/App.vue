@@ -44,7 +44,7 @@ export default {
     const scaleEnd = ref(100)
 
     const fillColorFn = computed(() => {
-      const ret: CallbackFunction<string> = (feature, data, { focus }) => {
+      const ret: CallbackFunction<string> = (feature, data: any) => {
         return chroma.scale('#FFFFFF', '#FF0000')
           .domain(scaleStart.value, scaleEnd.value).out('hex')(data.value)
       }
@@ -83,7 +83,8 @@ export default {
           opacity: borderOpacityFn.value
         },
         tooltip: {
-          //content: () => PopupContent
+          mode: 'always',
+          content: () => PopupContent
         },
       }
     })

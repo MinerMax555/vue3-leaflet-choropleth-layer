@@ -6,7 +6,7 @@
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
-    <l-tooltip v-if="tooltip">
+    <l-tooltip v-show="tooltip">
       <component
         v-if="typeof tooltip === 'object' && currentFeature"
         :is="tooltip"
