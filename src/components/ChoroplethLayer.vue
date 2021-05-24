@@ -5,6 +5,7 @@
     :options="geoOptions"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
+    @click="onClick"
   >
     <l-tooltip v-show="tooltip">
       <component
@@ -115,7 +116,7 @@ export default defineComponent({
       return { style }
     })
     const tooltip = computed((): Component | string | null => {
-      if(mergedOptions.tooltip.mode === 'disabled')
+      if (mergedOptions.tooltip.mode === 'disabled')
         return null
       if (typeof mergedOptions.tooltip.content === 'object') {
         return mergedOptions.tooltip.content
@@ -135,12 +136,20 @@ export default defineComponent({
         event.sourceTarget.bringToFront()
       }
     }
+
     function onMouseLeave (event: LeafletMouseEvent) {
       context.emit('mouseleave', event)
       currentFeature.value = null
     }
 
-    return { layer, geoOptions, tooltip, currentFeature, currentData, onMouseEnter, onMouseLeave }
+    function onClick (event: LeafletMouseEvent) {
+      context.emit('click', event)
+    }
+
+    return {
+      layer, geoOptions, tooltip, currentFeature, currentData,
+      onMouseEnter, onMouseLeave, onClick
+    }
   }
 })
 </script>
