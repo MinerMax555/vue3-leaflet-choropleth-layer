@@ -21,7 +21,7 @@ export default defineComponent({
       type: Object as PropType<Feature>,
       required: true
     },
-    data: {
+    featureData: {
       type: Object as PropType<unknown>,
       required: true
     },
@@ -31,7 +31,7 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const typedData = computed(() => props.data as any)
+    const typedData = computed(() => props.featureData as any)
     return { typedData }
   }
 })

@@ -10,7 +10,7 @@
         v-if="typeof tooltip === 'object' && currentFeature"
         :is="tooltip"
         :feature="currentFeature"
-        :data="currentData"
+        :feature-data="currentData"
         :callback-data="callbackData"
       />
       <div v-else-if="tooltip" v-html="tooltip" />
