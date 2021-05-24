@@ -6,6 +6,8 @@ type FillPattern = any
 
 interface CallbackParameter {
   callbackData?: unknown
+  /**Indicates wether the feature the currently selected/focused feature */
+  focus?: boolean
 }
 
 interface BorderCallbackParameter extends CallbackParameter {

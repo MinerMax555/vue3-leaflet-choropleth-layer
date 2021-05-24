@@ -24,7 +24,7 @@ import ChoroplethLayer from '../components/ChoroplethLayer.vue'
 import * as chroma from 'chroma.ts'
 import { Feature } from 'geojson'
 import { PartialDeep } from 'type-fest'
-import { ChoroplethOptions } from '../index'
+import { CallbackFunction, ChoroplethOptions } from '../index'
 import PopupContent from './PopupContent.vue'
 
 export default {
@@ -44,22 +44,46 @@ export default {
     const scaleEnd = ref(100)
 
     const fillColorFn = computed(() => {
-        return (feature: Feature, data: any) => {
-          return chroma.scale('#FFFFFF', '#FF0000')
-            .domain(scaleStart.value, scaleEnd.value).out('hex')(data.value)
+      const ret: CallbackFunction<string> = (feature, data, { focus }) => {
+        return chroma.scale('#FFFFFF', '#FF0000')
+          .domain(scaleStart.value, scaleEnd.value).out('hex')(data.value)
+      }
+      return ret
+    })
+    const borderWeightFn = computed(() => {
+      const ret: CallbackFunction<number> = (feature, data, { focus }) => {
+        if(focus) {
+          return 3
+        } else {
+          return 1
         }
       }
-    )
+      return ret
+    })
+    const borderOpacityFn = computed(() => {
+      const ret: CallbackFunction<number> = (feature, data, { focus }) => {
+        if(focus) {
+          return 1
+        } else {
+          return 0.5
+        }
+      }
+      return ret
+    })
     const options = computed<PartialDeep<ChoroplethOptions>>(() => {
       //To ensure
-      scaleStart.value;
-      scaleEnd.value;
+      scaleStart.value
+      scaleEnd.value
       return {
         fill: {
           color: fillColorFn.value
         },
+        border: {
+          weight: borderWeightFn.value,
+          opacity: borderOpacityFn.value
+        },
         tooltip: {
-          content: () => PopupContent
+          //content: () => PopupContent
         },
       }
     })

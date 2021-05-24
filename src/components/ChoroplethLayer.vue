@@ -4,8 +4,9 @@
     :geojson="geoJson"
     :options="geoOptions"
     @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
   >
-    <l-tooltip>
+    <l-tooltip v-if="tooltip">
       <component
         v-if="typeof tooltip === 'object' && currentFeature"
         :is="tooltip"
@@ -13,7 +14,7 @@
         :feature-data="currentData"
         :callback-data="callbackData"
       />
-      <div v-else-if="tooltip" v-html="tooltip" />
+      <div v-else v-html="tooltip" />
     </l-tooltip>
   </l-geo-json>
 </template>
@@ -58,7 +59,7 @@ export default defineComponent({
   },
   setup (props, context) {
     //TODO correct type of LGeoJson
-    const layer = ref<any|null>(null)
+    const layer = ref<any | null>(null)
     const currentFeature = ref<Feature | null>(null)
     const currentData = computed((): unknown => getDataForFeature(currentFeature.value))
 
@@ -77,39 +78,45 @@ export default defineComponent({
     const mergedOptions: ChoroplethOptions = mergeOptions(defaultOptions, props.options)
     const geoOptions = computed((): GeoJSONOptions => {
       const style = (feature?: Feature): PathOptions => {
-          if (!feature)
-            return {}
-          const data = getDataForFeature(feature)
-          const fill = {
-            color: executeCallback<string>(mergedOptions.fill.color, feature, data,
-              { callbackData: props.callbackData }),
-            opacity: executeCallback<number>(mergedOptions.fill.opacity, feature, data,
-              { callbackData: props.callbackData }),
-          }
-          const border = {
-            weight: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.weight, feature, data,
-              { callbackData: props.callbackData, fill: fill }),
-            color: executeCallback<string, BorderCallbackParameter>(mergedOptions.border.color, feature, data,
-              { callbackData: props.callbackData, fill: fill }),
-            opacity: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.opacity, feature, data,
-              { callbackData: props.callbackData, fill: fill }),
-          }
-          return {
-            fillColor: fill.color,
-            fillOpacity: fill.opacity,
-
-            color: border.color,
-            weight: border.weight,
-            opacity: border.opacity,
-          }
+        if (!feature)
+          return {}
+        let focus = false
+        if (currentFeature.value && currentFeature.value?.id === feature.id) {
+          focus = true
         }
+        const data = getDataForFeature(feature)
+        const fill = {
+          color: executeCallback<string>(mergedOptions.fill.color, feature, data,
+            { callbackData: props.callbackData, focus: focus }),
+          opacity: executeCallback<number>(mergedOptions.fill.opacity, feature, data,
+            { callbackData: props.callbackData, focus: focus }),
+        }
+        const border = {
+          weight: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.weight, feature, data,
+            { callbackData: props.callbackData, focus: focus, fill: fill }),
+          color: executeCallback<string, BorderCallbackParameter>(mergedOptions.border.color, feature, data,
+            { callbackData: props.callbackData, focus: focus, fill: fill }),
+          opacity: executeCallback<number, BorderCallbackParameter>(mergedOptions.border.opacity, feature, data,
+            { callbackData: props.callbackData, focus: focus, fill: fill }),
+        }
+        return {
+          fillColor: fill.color,
+          fillOpacity: fill.opacity,
+
+          color: border.color,
+          weight: border.weight,
+          opacity: border.opacity,
+        }
+      }
       const leafletObj = layer.value?.leafletObject
-      if(leafletObj?.setStyle) {
+      if (leafletObj?.setStyle) {
         leafletObj.setStyle(style)
       }
       return { style }
     })
     const tooltip = computed((): Component | string | null => {
+      if(mergedOptions.tooltip.mode === 'disabled')
+        return null
       if (typeof mergedOptions.tooltip.content === 'object') {
         return mergedOptions.tooltip.content
       } else {
@@ -124,8 +131,12 @@ export default defineComponent({
       context.emit('mouseenter', event)
       currentFeature.value = event.sourceTarget.feature
     }
+    function onMouseLeave (event: LeafletMouseEvent) {
+      context.emit('mouseleave', event)
+      currentFeature.value = null
+    }
 
-    return { layer, geoOptions, tooltip, currentFeature, currentData, onMouseEnter }
+    return { layer, geoOptions, tooltip, currentFeature, currentData, onMouseEnter, onMouseLeave }
   }
 })
 </script>
