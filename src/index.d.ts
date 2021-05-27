@@ -1,7 +1,7 @@
 import { Feature } from 'geojson'
 import type { SVG } from 'leaflet'
+import { Component } from 'vue'
 
-type BorderPattern = any
 type FillPattern = any
 
 interface CallbackParameter {
@@ -33,19 +33,23 @@ export type ChoroplethOptions = {
     opacity: number | CallbackFunction<number>
     color: string | CallbackFunction<string>
     pattern: FillPattern | CallbackFunction<FillPattern>
+    patternColor: string | CallbackFunction<string>
   }
   border: {
     weight: number | BorderCallbackFunction<number>
     opacity: number | BorderCallbackFunction<number>
     color: string | BorderCallbackFunction<string>
-    pattern: BorderPattern | CallbackFunction<BorderPattern>
+    dashArray: string | CallbackFunction<string>
   }
   tooltip: {
     mode: 'disabled' | 'desktopOnly' | 'always'
-    onHover: boolean
-    activationDelay: number
+    //Should last tooltip remain after leaving area
     sticky: boolean
     content: string | TooltipFn | object
   }
+  popup: {
+    content: string | TooltipFn | object | null
+  }
+  //TODO
   renderer?: SVG
 }

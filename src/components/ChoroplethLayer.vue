@@ -17,6 +17,16 @@
       />
       <div v-else v-html="tooltip" />
     </l-tooltip>
+    <l-popup v-show="popup && currentFeature">
+      <component
+        v-if="typeof popup === 'object' && currentFeature"
+        :is="popup"
+        :feature="currentFeature"
+        :feature-data="currentData"
+        :callback-data="callbackData"
+      />
+      <div v-else v-html="popup" />
+    </l-popup>
   </l-geo-json>
 </template>
 
@@ -128,6 +138,17 @@ export default defineComponent({
       }
     })
 
+    const popup = computed((): Component | string | null => {
+      if (typeof mergedOptions.popup.content === 'object') {
+        return mergedOptions.popup.content
+      } else {
+        if (!currentFeature.value) {
+          return null
+        }
+        return executeCallback<string>(mergedOptions.popup.content, currentFeature.value, currentData.value, { callbackData: props.callbackData })
+      }
+    })
+
     function onMouseEnter (event: LeafletMouseEvent) {
       context.emit('mouseenter', event)
       currentFeature.value = event.sourceTarget.feature
@@ -147,7 +168,7 @@ export default defineComponent({
     }
 
     return {
-      layer, geoOptions, tooltip, currentFeature, currentData,
+      layer, geoOptions, tooltip, popup, currentFeature, currentData,
       onMouseEnter, onMouseLeave, onClick
     }
   }

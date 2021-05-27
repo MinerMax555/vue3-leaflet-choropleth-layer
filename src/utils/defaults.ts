@@ -10,19 +10,22 @@ export const defaultOptions: ChoroplethOptions = {
   fill: {
     color: defaultFillColorFn,
     opacity: 1,
-    pattern: null
+    pattern: null,
+    patternColor: 'TODO'
   },
   border: {
     weight: 0.5,
     opacity: 0.5,
     color: '#000000',
-    pattern: null
+    dashArray: 'TODO'
   },
   tooltip: {
     mode: 'disabled',
-    onHover: true,
     sticky: false,
-    activationDelay: 0,
     content: '<h1>Default tooltip</h1>'
   },
+  popup: {
+    //TODO reset to null
+    content: '<h2>Im Popup!</h2>'
+  }
 }
