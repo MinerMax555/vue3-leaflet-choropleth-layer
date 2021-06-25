@@ -31,15 +31,15 @@
 </template>
 
 <script lang="ts">
+import type { PartialDeep } from 'type-fest'
 import type { GeoJSON, GeoJSONOptions, LeafletMouseEvent, PathOptions } from 'leaflet'
 import type { Feature } from 'geojson'
-import type { BorderCallbackParameter, ChoroplethOptions } from '../index'
+import type { BorderCallbackParameter, ChoroplethOptions } from '@/index'
 import { Component, computed, defineComponent, PropType, ref } from 'vue'
 import { LGeoJson, LPopup, LTooltip } from '@vue-leaflet/vue-leaflet'
-import { PartialDeep } from 'type-fest'
 import mergeOptions from 'merge-options'
-import { executeCallback } from '../utils/util'
-import { defaultOptions } from '../utils/defaults'
+import { executeCallback } from '@/utils/util'
+import { defaultOptions } from '@/utils/defaults'
 
 export default defineComponent({
   name: 'ChoroplethLayer',

@@ -9,9 +9,9 @@
 </template>
 
 <script lang="ts">
+import type { Feature } from 'geojson'
+import type { CallbackParameter } from '@/index'
 import { computed, defineComponent, PropType } from 'vue'
-import { Feature } from 'geojson'
-import { CallbackParameter } from '../index'
 
 export default defineComponent({
   name: 'PopupContent',

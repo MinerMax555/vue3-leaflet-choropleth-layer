@@ -7,6 +7,12 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, 'src'),
+      "~": path.resolve(__dirname, 'playground'),
+    }
+  },
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/lib.ts'),

@@ -17,15 +17,14 @@
 </template>
 
 <script lang="ts">
+import type { PartialDeep } from 'type-fest'
+import type { CallbackFunction, ChoroplethOptions } from '@/index'
 import { computed, onMounted, ref } from 'vue'
 import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet'
 import axios from 'axios'
-import ChoroplethLayer from '../components/ChoroplethLayer.vue'
 import * as chroma from 'chroma.ts'
-import { Feature } from 'geojson'
-import { PartialDeep } from 'type-fest'
-import { CallbackFunction, ChoroplethOptions } from '../index'
-import PopupContent from './PopupContent.vue'
+import ChoroplethLayer from '@/components/ChoroplethLayer.vue'
+import PopupContent from '~/components/PopupContent.vue'
 
 export default {
   name: 'App',
@@ -113,5 +112,5 @@ export default {
 </script>
 
 <style>
-@import '../../node_modules/leaflet/dist/leaflet.css';
+@import '../node_modules/leaflet/dist/leaflet.css';
 </style>
