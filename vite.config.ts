@@ -1,6 +1,7 @@
 import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import dts from 'vite-dts'
 import analyze from 'rollup-plugin-analyzer'
 import { visualizer } from 'rollup-plugin-visualizer'
 
@@ -27,6 +28,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    dts(),
     analyze(),
     visualizer({ template: 'treemap', filename: 'stats/treemap.html' }),
     visualizer({ template: 'sunburst', filename: 'stats/suburst.html' }),
